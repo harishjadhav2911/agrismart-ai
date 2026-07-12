@@ -121,14 +121,14 @@ export default function Home() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary-500/20 group">
+                <Link href="/dashboard" className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary-500/20 group">
                   {t("btn_get_started")}
                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2">
+                </Link>
+                <Link href="/guidance" className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2">
                   <Bot size={20} />
                   {t("btn_talk_ai")}
-                </button>
+                </Link>
               </div>
             </motion.div>
           </div>
@@ -220,9 +220,9 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 relative z-10 text-center text-white">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">{t("cta_title")}</h2>
           <p className="text-xl text-primary-100 mb-10">{t("cta_sub")}</p>
-          <button className="bg-white text-primary-700 hover:bg-gray-50 px-10 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1">
+          <Link href="/register" className="inline-block bg-white text-primary-700 hover:bg-gray-50 px-10 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1">
             {t("cta_btn")}
-          </button>
+          </Link>
         </div>
       </section>
 
