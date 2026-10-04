@@ -4,11 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, Menu, X, Globe, User, Moon, Sun, ChevronDown, LogOut } from "lucide-react";
+import { Leaf, Menu, X, Globe, User, Moon, Sun, ChevronDown, LogOut, Download } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
 import { LanguageCode } from "@/context/LanguageContext";
+import { usePWA } from "@/components/PWAProvider";
+
+import BrandLogo from "@/components/BrandLogo";
 
 const languages: { code: LanguageCode; label: string }[] = [
   { code: "en", label: "English" },
@@ -25,6 +28,7 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const { isInstallable, isInstalled, installApp } = usePWA();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -49,23 +53,18 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-300 border-b border-transparent ${
+      className={`fixed top-0 left-0 right-0 w-full z-50 h-[72px] sm:h-20 flex items-center transition-all duration-300 border-b ${
         scrolled
-          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg border-gray-200 dark:border-gray-800 py-3"
-          : "bg-white/90 dark:bg-gray-900/90 py-5"
+          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-md border-gray-200 dark:border-gray-800"
+          : "bg-white/95 dark:bg-gray-900/95 border-gray-100 dark:border-gray-800"
       }`}
     >
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-2 group">
-            <div className="p-2 bg-primary-500 rounded-lg text-white group-hover:scale-105 transition-transform">
-              <Leaf size={24} />
-            </div>
-            <span className="font-bold text-xl md:text-2xl text-primary-900 dark:text-primary-400">
-              AgriSmart AI
-            </span>
-          </Link>
+        <div className="flex justify-between items-center gap-4">
+          {/* Official Brand Logo (Left Section) */}
+          <div className="flex-shrink-0 flex items-center">
+            <BrandLogo size="md" linkHref="/" />
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden xl:flex items-center space-x-1">
@@ -87,10 +86,11 @@ export default function Navbar() {
               <button
                 onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
                 className="flex items-center gap-1.5 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                title="Change Language / भाषा निवडा"
               >
-                <Globe size={20} />
-                <span className="hidden sm:inline-block text-sm font-medium uppercase">
-                  {language}
+                <Globe size={20} className="text-primary-600 dark:text-primary-400" />
+                <span className="hidden sm:inline-block text-sm font-bold uppercase">
+                  {language === "mr" ? "मराठी" : language === "hi" ? "हिंदी" : "EN"}
                 </span>
                 <ChevronDown size={14} className={`transition-transform ${isLangMenuOpen ? "rotate-180" : ""}`} />
               </button>
@@ -101,8 +101,11 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2"
+                    className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50 overflow-hidden"
                   >
+                    <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                      {language === "mr" ? "भाषा निवडा" : language === "hi" ? "भाषा चुनें" : "Select Language"}
+                    </div>
                     {languages.map((lang) => (
                       <button
                         key={lang.code}
@@ -110,13 +113,14 @@ export default function Navbar() {
                           setLanguage(lang.code);
                           setIsLangMenuOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors ${
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between ${
                           language === lang.code
-                            ? "text-primary-600 dark:text-primary-400 font-bold bg-primary-50/50 dark:bg-gray-700/50"
-                            : "text-gray-700 dark:text-gray-300"
+                            ? "text-primary-600 dark:text-primary-400 font-bold bg-primary-50/70 dark:bg-gray-700/70"
+                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                         }`}
                       >
-                        {lang.label}
+                        <span>{lang.label}</span>
+                        {language === lang.code && <span className="text-xs text-primary-600 font-bold">✓</span>}
                       </button>
                     ))}
                   </motion.div>
@@ -124,11 +128,24 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* Install App Button (if not already installed) */}
+            {!isInstalled && (
+              <button
+                onClick={installApp}
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-500/20 transition-all shadow-sm"
+                title="Install AgriSmart App"
+              >
+                <Download size={14} className="text-emerald-600 dark:text-emerald-400 animate-bounce" />
+                <span>Install App</span>
+              </button>
+            )}
+
             {/* Theme Toggle */}
             {mounted && (
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors hidden sm:block"
+                title="Toggle Theme"
               >
                 {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               </button>
@@ -171,10 +188,10 @@ export default function Navbar() {
             ) : (
               <Link 
                 href="/login" 
-                className="hidden sm:flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-full font-medium transition-colors shadow-lg shadow-primary-500/30"
+                className="hidden sm:flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-full font-medium transition-colors shadow-lg shadow-primary-500/30 text-sm"
               >
                 <User size={18} />
-                <span>Login</span>
+                <span>{t("nav_login", "Login / Sign Up")}</span>
               </Link>
             )}
 
@@ -199,6 +216,29 @@ export default function Navbar() {
             className="xl:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden"
           >
             <div className="px-4 py-4 space-y-1">
+              {/* Mobile Language Switcher Row */}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 mb-3 border border-gray-200/50 dark:border-gray-700/50">
+                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
+                  <Globe size={16} className="text-primary-500" />
+                  {language === "mr" ? "भाषा" : language === "hi" ? "भाषा" : "Language"}
+                </span>
+                <div className="flex gap-1">
+                  {languages.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => setLanguage(l.code)}
+                      className={`px-2.5 py-1 text-xs rounded-lg font-bold transition-colors ${
+                        language === l.code
+                          ? "bg-primary-600 text-white"
+                          : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {navLinks.map((link, idx) => (
                 <Link
                   key={idx}
@@ -210,6 +250,22 @@ export default function Navbar() {
                 </Link>
               ))}
               
+              {/* Mobile Install App Button */}
+              {!isInstalled && (
+                <div className="pt-2 pb-1">
+                  <button
+                    onClick={() => {
+                      installApp();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-600/20 transition-all"
+                  >
+                    <Download size={16} />
+                    <span>Install AgriSmart App</span>
+                  </button>
+                </div>
+              )}
+
               <div className="pt-4 mt-2 border-t border-gray-100 dark:border-gray-800">
                 {user ? (
                   <>

@@ -5,12 +5,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Leaf, Lock, Mail, ArrowRight, Loader2 } from "lucide-react";
+import { Lock, Mail, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function LoginPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,7 +28,7 @@ export default function LoginPage() {
       await login(email, password);
       router.push("/dashboard");
     } catch {
-      setError("An unexpected error occurred. Please try again.");
+      setError(t("login_err_default", "An unexpected error occurred. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
@@ -44,12 +45,14 @@ export default function LoginPage() {
           className="bg-white dark:bg-gray-900 w-full max-w-md rounded-3xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
         >
           <div className="p-8">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center p-3 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-2xl mb-4">
-                <Leaf size={32} />
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">Log in to manage your farm and access smart guidance.</p>
+            <div className="text-center mb-8 flex flex-col items-center">
+              <BrandLogo size="lg" className="mb-4" />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {t("login_title", "Welcome Back")}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">
+                {t("login_subtitle", "Log in to manage your farm and access smart guidance.")}
+              </p>
             </div>
 
             {error && (
@@ -80,7 +83,7 @@ export default function LoginPage() {
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("login_pass")}</label>
                   <Link href="/forgot-password" className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline">
-                    Forgot password?
+                    {t("login_forgot_link", "Forgot password?")}
                   </Link>
                 </div>
                 <div className="relative">
@@ -113,8 +116,10 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="font-semibold text-primary-600 dark:text-primary-400 hover:underline">{t("reg_title")}</Link>
+              {t("login_no_account", "Don't have an account?")}{" "}
+              <Link href="/register" className="font-semibold text-primary-600 dark:text-primary-400 hover:underline">
+                {t("login_signup_link", "Sign up now")}
+              </Link>
             </div>
           </div>
         </motion.div>

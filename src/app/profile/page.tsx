@@ -1,20 +1,23 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { 
   User, MapPin, Sprout, ShieldCheck, TrendingUp, LogOut, Camera, 
-  Settings, Save, Globe, MessageSquare, ChevronRight, Edit3
+  Settings, Save, Globe, MessageSquare, ChevronRight, Edit3, Trash2, ExternalLink
 } from "lucide-react";
 import { useAuth, UserProfile } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
+import { getLocalizedSchemes } from "@/data/schemes";
+import { getLocalizedDistrict, getLocalizedState } from "@/data/indiaLocations";
 
 export default function ProfilePage() {
-  const { t } = useLanguage();
-  const { user, isLoading, logout, updateProfile } = useAuth();
+  const { t, language, openLanguageModal } = useLanguage();
+  const { user, isLoading, logout, updateProfile, toggleSaveScheme } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("personal");
   const [isEditing, setIsEditing] = useState(false);
@@ -22,6 +25,15 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const allLocalizedSchemes = useMemo(() => getLocalizedSchemes(language), [language]);
+
+  const savedSchemesList = useMemo(() => {
+    if (!user?.savedSchemes || user.savedSchemes.length === 0) return [];
+    return user.savedSchemes
+      .map(id => allLocalizedSchemes.find(s => s.id === id))
+      .filter(Boolean) as typeof allLocalizedSchemes;
+  }, [user?.savedSchemes, allLocalizedSchemes]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -61,10 +73,10 @@ export default function ProfilePage() {
   };
 
   const tabs = [
-    { id: "personal", label: t("reg_step1"), icon: <User size={18} /> },
-    { id: "farm", label: "Farm & Location", icon: <Sprout size={18} /> },
-    { id: "saved", label: "Saved Items", icon: <ShieldCheck size={18} /> },
-    { id: "preferences", label: "Preferences", icon: <Settings size={18} /> },
+    { id: "personal", label: t("prof_tab_personal", "Personal Details"), icon: <User size={18} /> },
+    { id: "farm", label: t("prof_tab_farm", "Farm & Location"), icon: <Sprout size={18} /> },
+    { id: "saved", label: t("prof_tab_saved", "Saved Items"), icon: <ShieldCheck size={18} /> },
+    { id: "preferences", label: t("prof_tab_pref", "Preferences"), icon: <Settings size={18} /> },
   ];
 
   return (
@@ -97,7 +109,9 @@ export default function ProfilePage() {
                 </div>
                 
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">{user.name}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{user.location.state}, India</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  {getLocalizedDistrict(user.location.district, language)}, {getLocalizedState(user.location.state, language)}
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -154,9 +168,9 @@ export default function ProfilePage() {
                     {isSaving ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     ) : isEditing ? (
-                      <><Save size={16} /> Save</>
+                      <><Save size={16} /> {t("prof_save_btn", "Save Changes")}</>
                     ) : (
-                      <><Edit3 size={16} /> Edit</>
+                      <><Edit3 size={16} /> {t("prof_edit_btn", "Edit")}</>
                     )}
                   </button>
                 )}
@@ -167,7 +181,7 @@ export default function ProfilePage() {
                 <div className="space-y-6 max-w-2xl">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t("reg_full_name", "Full Name")}</label>
                       {isEditing ? (
                         <input type="text" value={editForm.name || ""} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-primary-500" />
                       ) : (
@@ -175,7 +189,7 @@ export default function ProfilePage() {
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Phone Number</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t("reg_phone_num", "Phone Number")}</label>
                       {isEditing ? (
                         <input type="text" value={editForm.phone || ""} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-primary-500" />
                       ) : (
@@ -187,7 +201,7 @@ export default function ProfilePage() {
                       {isEditing ? (
                         <input type="email" value={editForm.email || ""} onChange={e => setEditForm({...editForm, email: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-primary-500" />
                       ) : (
-                        <div className="text-gray-900 dark:text-white font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-transparent">{user.email || "Not provided"}</div>
+                        <div className="text-gray-900 dark:text-white font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-transparent">{user.email || "—"}</div>
                       )}
                     </div>
                   </div>
@@ -198,79 +212,83 @@ export default function ProfilePage() {
               {activeTab === "farm" && (
                 <div className="space-y-8 max-w-2xl">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2"><MapPin size={20} className="text-primary-500" /> Location</h3>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                      <MapPin size={20} className="text-primary-500" /> {t("prof_location_title", "Farm Location")}
+                    </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                        <div className="text-xs text-gray-500 mb-1">State</div>
-                        <div className="font-semibold text-gray-900 dark:text-white">{user.location.state}</div>
+                        <div className="text-xs text-gray-500 mb-1">{t("reg_state_label", "State")}</div>
+                        <div className="font-semibold text-gray-900 dark:text-white">{getLocalizedState(user.location.state, language)}</div>
                       </div>
                       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                        <div className="text-xs text-gray-500 mb-1">District</div>
-                        <div className="font-semibold text-gray-900 dark:text-white">{user.location.district}</div>
+                        <div className="text-xs text-gray-500 mb-1">{t("reg_district_label", "District")}</div>
+                        <div className="font-semibold text-gray-900 dark:text-white">{getLocalizedDistrict(user.location.district, language)}</div>
                       </div>
                       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                        <div className="text-xs text-gray-500 mb-1">Taluka</div>
-                        <div className="font-semibold text-gray-900 dark:text-white">{user.location.taluka}</div>
+                        <div className="text-xs text-gray-500 mb-1">{t("reg_taluka_label", "Taluka")}</div>
+                        <div className="font-semibold text-gray-900 dark:text-white">{user.location.taluka || "—"}</div>
                       </div>
                       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                        <div className="text-xs text-gray-500 mb-1">Village</div>
-                        <div className="font-semibold text-gray-900 dark:text-white">{user.location.village || "N/A"}</div>
+                        <div className="text-xs text-gray-500 mb-1">{t("reg_village_label", "Village")}</div>
+                        <div className="font-semibold text-gray-900 dark:text-white">{user.location.village || "—"}</div>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2"><Sprout size={20} className="text-green-500" /> Farm Profile</h3>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                      <Sprout size={20} className="text-green-500" /> {t("prof_profile_title", "Farm Profile")}
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Farm Size</label>
+                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t("reg_farm_size_label", "Farm Size")}</label>
                         {isEditing ? (
                           <select 
                             value={editForm.farmDetails?.farmSize || ""} 
                             onChange={e => setEditForm({...editForm, farmDetails: {...editForm.farmDetails!, farmSize: e.target.value}})}
                             className="w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-primary-500"
                           >
-                            <option value="Less than 2 Acres">Less than 2 Acres</option>
-                            <option value="2-5 Acres">2-5 Acres</option>
-                            <option value="5-10 Acres">5-10 Acres</option>
-                            <option value="More than 10 Acres">More than 10 Acres</option>
+                            <option value="Less than 2 Acres">{t("reg_size_less2", "Less than 2 Acres")}</option>
+                            <option value="2-5 Acres">{t("reg_size_2to5", "2-5 Acres")}</option>
+                            <option value="5-10 Acres">{t("reg_size_5to10", "5-10 Acres")}</option>
+                            <option value="More than 10 Acres">{t("reg_size_more10", "More than 10 Acres")}</option>
                           </select>
                         ) : (
-                          <div className="text-gray-900 dark:text-white font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-transparent">{user.farmDetails.farmSize || "Not specified"}</div>
+                          <div className="text-gray-900 dark:text-white font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-transparent">{user.farmDetails.farmSize || "—"}</div>
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Soil Type</label>
+                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t("reg_soil_type_label", "Soil Type")}</label>
                         {isEditing ? (
                           <select 
                             value={editForm.farmDetails?.soilType || ""} 
                             onChange={e => setEditForm({...editForm, farmDetails: {...editForm.farmDetails!, soilType: e.target.value}})}
                             className="w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-primary-500"
                           >
-                            <option value="Black Soil">Black Soil</option>
-                            <option value="Red Soil">Red Soil</option>
-                            <option value="Alluvial Soil">Alluvial Soil</option>
-                            <option value="Sandy Soil">Sandy Soil</option>
+                            <option value="Black Soil">{t("guide_soil_black", "Black Soil")}</option>
+                            <option value="Red Soil">{t("guide_soil_red", "Red Soil")}</option>
+                            <option value="Alluvial Soil">{t("guide_soil_alluvial", "Alluvial Soil")}</option>
+                            <option value="Sandy Soil">{t("guide_soil_sandy", "Sandy Soil")}</option>
                           </select>
                         ) : (
-                          <div className="text-gray-900 dark:text-white font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-transparent">{user.farmDetails.soilType || "Not specified"}</div>
+                          <div className="text-gray-900 dark:text-white font-medium p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-transparent">{user.farmDetails.soilType || "—"}</div>
                         )}
                       </div>
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Primary Crops</label>
+                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t("reg_primary_crop_label", "Primary Crop")}</label>
                         {isEditing ? (
                           <input 
                             type="text" 
                             value={editForm.farmDetails?.primaryCrops?.join(", ") || ""} 
                             onChange={e => setEditForm({...editForm, farmDetails: {...editForm.farmDetails!, primaryCrops: e.target.value.split(", ")}})}
                             className="w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-primary-500" 
-                            placeholder="Comma separated"
+                            placeholder="e.g. Cotton, Wheat"
                           />
                         ) : (
                           <div className="flex flex-wrap gap-2">
                             {user.farmDetails.primaryCrops.length > 0 ? user.farmDetails.primaryCrops.map((crop, i) => (
                               <span key={i} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium">{crop}</span>
-                            )) : <span className="text-gray-500 text-sm">None specified</span>}
+                            )) : <span className="text-gray-500 text-sm">—</span>}
                           </div>
                         )}
                       </div>
@@ -283,22 +301,78 @@ export default function ProfilePage() {
               {activeTab === "saved" && (
                 <div className="space-y-8">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2"><ShieldCheck size={20} className="text-blue-500" /> Saved Government Schemes</h3>
-                    {user.savedSchemes.length > 0 ? (
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                        <ShieldCheck size={20} className="text-primary-500" /> 
+                        {t("prof_saved_schemes_title", "Saved Government Schemes")}
+                      </h3>
+                      <Link 
+                        href="/schemes?category=Bookmarked" 
+                        className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1"
+                      >
+                        {language === 'mr' ? "योजना पोर्टलवर पहा" : language === 'hi' ? "योजना पोर्टल पर देखें" : "View on Portal"}
+                        <ExternalLink size={13} />
+                      </Link>
+                    </div>
+
+                    {savedSchemesList.length > 0 ? (
                       <div className="grid gap-3">
-                        {user.savedSchemes.map((scheme, i) => (
-                          <div key={i} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 transition-colors cursor-pointer group">
-                            <div className="font-medium text-gray-900 dark:text-white uppercase">{scheme}</div>
-                            <ChevronRight size={18} className="text-gray-400 group-hover:text-primary-500 transition-colors" />
+                        {savedSchemesList.map((scheme) => (
+                          <div 
+                            key={scheme.id} 
+                            className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 transition-colors group gap-4"
+                          >
+                            <Link href="/schemes?category=Bookmarked" className="flex-grow min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-200/70 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                  {scheme.category}
+                                </span>
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                  {scheme.status}
+                                </span>
+                                <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                                  {scheme.launchDate}
+                                </span>
+                              </div>
+                              <div className="font-bold text-gray-900 dark:text-white text-base group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                                {scheme.name}
+                              </div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
+                                {scheme.shortDescription}
+                              </p>
+                            </Link>
+
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button 
+                                onClick={() => toggleSaveScheme(scheme.id)}
+                                title={language === 'mr' ? "योजना काढा (Unsave)" : language === 'hi' ? "योजना हटाएं (Unsave)" : "Remove bookmark"}
+                                className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="text-gray-500 text-sm p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center border border-dashed border-gray-300 dark:border-gray-700">No schemes saved yet.</div>
+                      <div className="text-gray-500 text-sm p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center border border-dashed border-gray-300 dark:border-gray-700">
+                        <ShieldCheck size={36} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+                        <p className="font-medium text-gray-600 dark:text-gray-300 mb-2">
+                          {language === 'mr' ? "अद्याप कोणतीही सरकारी योजना जतन केलेली नाही." : language === 'hi' ? "अभी तक कोई सरकारी योजना सहेजी नहीं गई है।" : "No government schemes bookmarked yet."}
+                        </p>
+                        <Link 
+                          href="/schemes" 
+                          className="inline-block mt-1 text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-4 py-2 rounded-xl hover:bg-primary-100 transition-colors"
+                        >
+                          {language === 'mr' ? "योजना शोधा व जतन करा" : language === 'hi' ? "योजनाएं खोजें व सहेजें" : "Explore Schemes"}
+                        </Link>
+                      </div>
                     )}
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2"><TrendingUp size={20} className="text-orange-500" /> Saved Market Prices</h3>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                      <TrendingUp size={20} className="text-orange-500" /> {t("prof_saved_market_title", "Saved Market Prices")}
+                    </h3>
                     {user.savedMarketPrices.length > 0 ? (
                       <div className="grid gap-3 md:grid-cols-2">
                         {user.savedMarketPrices.map((price, i) => (
@@ -309,7 +383,9 @@ export default function ProfilePage() {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-gray-500 text-sm p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center border border-dashed border-gray-300 dark:border-gray-700">No market prices saved yet.</div>
+                      <div className="text-gray-500 text-sm p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center border border-dashed border-gray-300 dark:border-gray-700">
+                        {t("prof_no_market_saved", "No market prices saved yet.")}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -320,20 +396,38 @@ export default function ProfilePage() {
                 <div className="space-y-6 max-w-xl">
                   <div className="p-5 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-1"><Globe size={18} className="text-primary-500" /> App Language</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Your preferred language for AI responses and interface.</p>
+                      <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-1">
+                        <Globe size={18} className="text-primary-500" /> {t("prof_app_lang", "App Language")}
+                      </h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {t("prof_app_lang_desc", "Your selected language for AI recommendations and interface.")}
+                      </p>
                     </div>
-                    <div className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium uppercase">
-                      {user.preferences.language}
-                    </div>
+                    <button 
+                      onClick={openLanguageModal}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md shadow-emerald-500/20 transition-all flex items-center gap-1.5"
+                    >
+                      <Globe size={15} />
+                      <span>{language === "mr" ? "मराठी (बदला)" : language === "hi" ? "हिंदी (बदलें)" : "English (Change)"}</span>
+                    </button>
                   </div>
 
                   <div className="p-5 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-1"><MessageSquare size={18} className="text-purple-500" /> AI Chat History</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">You have {user.chatHistoryCount} past AI consultations.</p>
+                      <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-1">
+                        <MessageSquare size={18} className="text-purple-500" /> {t("prof_chat_history", "AI Chat History")}
+                      </h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {language === "mr" 
+                          ? `तुमच्याकडे ${user.chatHistoryCount} मागील सल्ला सत्रे आहेत.` 
+                          : language === "hi" 
+                          ? `आपके पास ${user.chatHistoryCount} पिछले परामर्श सत्र हैं।` 
+                          : `You have ${user.chatHistoryCount} past AI consultations.`}
+                      </p>
                     </div>
-                    <button className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">View Logs</button>
+                    <Link href="/guidance" className="text-sm font-bold text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                      {language === "mr" ? "सल्लागार उघडा" : language === "hi" ? "सलाहकार खोलें" : "Open Advisor"}
+                    </Link>
                   </div>
                 </div>
               )}

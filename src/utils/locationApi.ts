@@ -1,3 +1,5 @@
+import { ALL_INDIAN_STATES_UTS, STATE_DISTRICTS, getTalukasForDistrict } from "@/data/indiaLocations";
+
 export interface LocationData {
   state: string;
   district: string;
@@ -43,47 +45,32 @@ export async function reverseGeocode(lat: number, lon: number): Promise<Partial<
   }
 }
 
-// Mock dataset for states and districts since a full reliable public API without keys is hard to guarantee.
-const indiaData: Record<string, string[]> = {
-  "Maharashtra": ["Pune", "Mumbai", "Nagpur", "Nashik", "Aurangabad"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar"],
-  "Punjab": ["Amritsar", "Ludhiana", "Jalandhar", "Patiala", "Bathinda"],
-  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"]
-};
-
+/**
+ * Fetch all 28 States & 8 Union Territories
+ */
 export async function fetchStates(): Promise<string[]> {
-  return Object.keys(indiaData).sort();
-}
-
-export async function fetchDistricts(state: string): Promise<string[]> {
-  if (!state) return [];
-  return (indiaData[state] || []).sort();
+  return ALL_INDIAN_STATES_UTS;
 }
 
 /**
- * Mocks fetching Talukas based on the district. 
- * In a real-world scenario with a dedicated backend, this would query a geographic database.
+ * Fetch all official districts for a State or UT
+ */
+export async function fetchDistricts(state: string): Promise<string[]> {
+  if (!state) return [];
+  return STATE_DISTRICTS[state] || [];
+}
+
+/**
+ * Fetch Talukas / Tehsils / Mandals for a District
  */
 export async function fetchTalukas(district: string): Promise<string[]> {
   if (!district) return [];
   const cacheKey = `talukas_${district}`;
   if (cache[cacheKey]) return cache[cacheKey];
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // Generate some realistic-looking mock talukas based on the district name
-  const mockTalukas = [
-    `${district} City`,
-    `${district} Rural`,
-    `${district} North`,
-    `${district} South`,
-    `New ${district} Area`
-  ];
-  
-  cache[cacheKey] = mockTalukas;
-  return mockTalukas;
+  const talukas = getTalukasForDistrict(district);
+  cache[cacheKey] = talukas;
+  return talukas;
 }
 
 export async function fetchVillages(taluka: string): Promise<string[]> {
@@ -91,14 +78,12 @@ export async function fetchVillages(taluka: string): Promise<string[]> {
   const cacheKey = `villages_${taluka}`;
   if (cache[cacheKey]) return cache[cacheKey];
 
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
   const mockVillages = [
-    `${taluka} Central`,
-    `${taluka} East`,
-    `${taluka} West`,
-    `Old ${taluka}`,
-    `New ${taluka} Village`
+    `${taluka} Gaon`,
+    `${taluka} Rural`,
+    `${taluka} North`,
+    `${taluka} South`,
+    `${taluka} East`
   ];
   
   cache[cacheKey] = mockVillages;

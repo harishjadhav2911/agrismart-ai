@@ -4,11 +4,12 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Leaf, Mail, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function ForgotPasswordPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -21,7 +22,7 @@ export default function ForgotPasswordPage() {
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -38,16 +39,18 @@ export default function ForgotPasswordPage() {
             <div className="mb-6">
               <Link href="/login" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 <ArrowLeft size={16} className="mr-1" />
-                Back to login
+                {t("login_back_btn", "Back to login")}
               </Link>
             </div>
 
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center p-3 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-2xl mb-4">
-                <Leaf size={32} />
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reset Password</h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">Enter your email and we&apos;ll send you instructions to reset your password.</p>
+            <div className="text-center mb-8 flex flex-col items-center">
+              <BrandLogo size="lg" className="mb-4" />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {t("forgot_title", "Reset Password")}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">
+                {t("forgot_sub", "Enter your email and we'll send you instructions to reset your password.")}
+              </p>
             </div>
 
             {isSuccess ? (
@@ -59,15 +62,17 @@ export default function ForgotPasswordPage() {
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-800 rounded-full text-green-600 dark:text-green-300 mb-4">
                   <CheckCircle2 size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-green-800 dark:text-green-300 mb-2">Check your email</h3>
+                <h3 className="text-lg font-bold text-green-800 dark:text-green-300 mb-2">
+                  {t("forgot_check_email", "Check your email")}
+                </h3>
                 <p className="text-green-700 dark:text-green-400 text-sm mb-6">
-                  We&apos;ll send a password reset link to your email.
+                  {t("forgot_sent_desc", "We've sent a password reset link to your email address.")}
                 </p>
                 <Link 
                   href="/login"
                   className="block w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all"
                 >
-                  Return to Login
+                  {t("forgot_return", "Return to Login")}
                 </Link>
               </motion.div>
             ) : (
@@ -97,7 +102,7 @@ export default function ForgotPasswordPage() {
                   {isSubmitting ? (
                     <Loader2 size={20} className="animate-spin" />
                   ) : (
-                    "Send Reset Link"
+                    t("forgot_btn", "Send Reset Link")
                   )}
                 </button>
               </form>

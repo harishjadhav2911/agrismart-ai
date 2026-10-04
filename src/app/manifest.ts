@@ -1,0 +1,100 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "AgriSmart AI - Smart Farming Platform",
+    short_name: "AgriSmart",
+    description: "Smart Agriculture for Every Farmer - AI Advisory, Real Mandi Prices, Weather Forecasts & Crop Health Detection",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#064e3b",
+    theme_color: "#16a34a",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: "/icons/icon-72x72.png",
+        sizes: "72x72",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-96x96.png",
+        sizes: "96x96",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-128x128.png",
+        sizes: "128x128",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-144x144.png",
+        sizes: "144x144",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-152x152.png",
+        sizes: "152x152",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-384x384.png",
+        sizes: "384x384",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-maskable-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+    ],
+    shortcuts: [
+      {
+        name: "Mandi Prices",
+        short_name: "Mandi",
+        description: "Check live APMC crop market prices",
+        url: "/mandi",
+        icons: [{ src: "/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+      {
+        name: "AI Advisory",
+        short_name: "AI Assistant",
+        description: "Consult AI Crop Advisor",
+        url: "/advisor",
+        icons: [{ src: "/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+      {
+        name: "Weather & Radar",
+        short_name: "Weather",
+        description: "Local rain and farming weather alerts",
+        url: "/weather",
+        icons: [{ src: "/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+      {
+        name: "Crop Health Scanner",
+        short_name: "Crop Scanner",
+        description: "Scan plant leaves for disease detection",
+        url: "/crop-health",
+        icons: [{ src: "/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+    ],
+  };
+}
