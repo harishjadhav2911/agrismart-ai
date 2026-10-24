@@ -1,0 +1,476 @@
+{
+  "metadata": {
+    "schemaVersion": "1.0.0",
+    "lastUpdated": "2026-10-24T20:52:15.664Z",
+    "totalUsers": 4
+  },
+  "users": [
+    {
+      "id": "usr_1792872751702_vv8g0",
+      "name": "Balasaheb Vikhe",
+      "email": "test.farmer.1792872751700@example.com",
+      "phone": "+91 9822998877",
+      "role": "farmer",
+      "accountStatus": "active",
+      "authProvider": "email_password",
+      "preferredLanguage": "mr",
+      "location": {
+        "state": "Maharashtra",
+        "district": "Ahmednagar",
+        "taluka": "Rahata",
+        "village": "Loni"
+      },
+      "farmDetails": {
+        "farmSize": "10 Acres",
+        "soilType": "Medium Black",
+        "primaryCrops": [
+          "Pomegranate",
+          "Soybean"
+        ]
+      },
+      "loginCount": 1,
+      "lastLoginAt": "2026-10-24T20:12:31.701Z",
+      "createdAt": "2026-10-24T20:12:31.701Z",
+      "updatedAt": "2026-10-24T20:12:31.701Z"
+    },
+    {
+      "id": "usr_ramesh_kumar_123",
+      "name": "Ramesh Kumar",
+      "email": "farmer@agrismart.com",
+      "phone": "+91 9876543210",
+      "role": "farmer",
+      "accountStatus": "active",
+      "authProvider": "email_password",
+      "preferredLanguage": "hi",
+      "location": {
+        "state": "Maharashtra",
+        "district": "Pune",
+        "taluka": "Haveli",
+        "village": "Khadakwasla"
+      },
+      "farmDetails": {
+        "farmSize": "5 Acres",
+        "soilType": "Black Soil",
+        "primaryCrops": [
+          "Cotton",
+          "Soybean"
+        ]
+      },
+      "loginCount": 14,
+      "lastLoginAt": "2026-10-24T20:11:24.041Z",
+      "createdAt": "2026-09-15T08:30:00.000Z",
+      "updatedAt": "2026-10-24T20:11:24.041Z"
+    },
+    {
+      "id": "usr_sunita_patil_456",
+      "name": "Sunita Patil",
+      "email": "sunita.farmer@example.com",
+      "phone": "+91 9822012345",
+      "role": "farmer",
+      "accountStatus": "active",
+      "authProvider": "google",
+      "preferredLanguage": "mr",
+      "location": {
+        "state": "Maharashtra",
+        "district": "Kolhapur",
+        "taluka": "Karvir",
+        "village": "Uchgaon"
+      },
+      "farmDetails": {
+        "farmSize": "3.5 Acres",
+        "soilType": "Clay Loam",
+        "primaryCrops": [
+          "Sugarcane",
+          "Rice"
+        ]
+      },
+      "loginCount": 8,
+      "lastLoginAt": "2026-10-22T11:15:00.000Z",
+      "createdAt": "2026-10-01T10:00:00.000Z",
+      "updatedAt": "2026-10-24T20:11:24.041Z"
+    },
+    {
+      "id": "usr_admin_system_001",
+      "name": "AgriSmart System Admin",
+      "email": "admin@agrismart.gov.in",
+      "phone": "+91 9422000000",
+      "role": "admin",
+      "accountStatus": "active",
+      "authProvider": "email_password",
+      "preferredLanguage": "en",
+      "loginCount": 42,
+      "lastLoginAt": "2026-10-24T20:11:24.041Z",
+      "createdAt": "2026-08-01T00:00:00.000Z",
+      "updatedAt": "2026-10-24T20:11:24.041Z"
+    }
+  ],
+  "login_audit_logs": [
+    {
+      "id": "log_1792872751702_c7nw0",
+      "userId": "usr_1792872751702_vv8g0",
+      "email": "test.farmer.1792872751700@example.com",
+      "eventType": "registration_success",
+      "authProvider": "email_password",
+      "createdAt": "2026-10-24T20:12:31.701Z"
+    },
+    {
+      "id": "log_init_001",
+      "userId": "usr_ramesh_kumar_123",
+      "email": "farmer@agrismart.com",
+      "eventType": "registration_success",
+      "authProvider": "email_password",
+      "createdAt": "2026-09-15T08:30:00.000Z"
+    },
+    {
+      "id": "log_init_002",
+      "userId": "usr_sunita_patil_456",
+      "email": "sunita.farmer@example.com",
+      "eventType": "registration_success",
+      "authProvider": "google",
+      "createdAt": "2026-10-01T10:00:00.000Z"
+    }
+  ],
+  "admin_audit_logs": [
+    {
+      "id": "admin_act_1792875135664",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792875135639_217sh",
+      "details": {
+        "deletedEmail": "farmer.escalation.1792875135638@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:52:15.664Z"
+    },
+    {
+      "id": "admin_act_1792875135626",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792875135584_u8xc5",
+      "details": {
+        "deletedEmail": "test.farmer.1792875135581@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:52:15.626Z"
+    },
+    {
+      "id": "admin_act_1792875135619",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792875135584_u8xc5",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:52:15.619Z"
+    },
+    {
+      "id": "admin_act_1792875135614",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792875135584_u8xc5",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:52:15.614Z"
+    },
+    {
+      "id": "admin_act_1792874993278",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792874993250_wcg5w",
+      "details": {
+        "deletedEmail": "farmer.escalation.1792874993249@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:49:53.278Z"
+    },
+    {
+      "id": "admin_act_1792874993232",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792874993168_vbxgw",
+      "details": {
+        "deletedEmail": "test.farmer.1792874993165@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:49:53.232Z"
+    },
+    {
+      "id": "admin_act_1792874993219",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792874993168_vbxgw",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:49:53.219Z"
+    },
+    {
+      "id": "admin_act_1792874993212",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792874993168_vbxgw",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:49:53.212Z"
+    },
+    {
+      "id": "admin_act_1792874348116",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792874348092_bidgq",
+      "details": {
+        "deletedEmail": "farmer.escalation.1792874348091@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:39:08.116Z"
+    },
+    {
+      "id": "admin_act_1792874348079",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792874348044_wazjc",
+      "details": {
+        "deletedEmail": "test.farmer.1792874348042@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:39:08.079Z"
+    },
+    {
+      "id": "admin_act_1792874348072",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792874348044_wazjc",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:39:08.072Z"
+    },
+    {
+      "id": "admin_act_1792874348069",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792874348044_wazjc",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:39:08.069Z"
+    },
+    {
+      "id": "admin_act_1792874219398",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792874219364_seawa",
+      "details": {
+        "deletedEmail": "farmer.escalation.1792874219363@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:36:59.398Z"
+    },
+    {
+      "id": "admin_act_1792874219348",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792874219307_6qbot",
+      "details": {
+        "deletedEmail": "test.farmer.1792874219305@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:36:59.348Z"
+    },
+    {
+      "id": "admin_act_1792874219341",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792874219307_6qbot",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:36:59.341Z"
+    },
+    {
+      "id": "admin_act_1792874219336",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792874219307_6qbot",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:36:59.336Z"
+    },
+    {
+      "id": "admin_act_1792872899438",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792872899389_nydy4",
+      "details": {
+        "deletedEmail": "test.farmer.1792872899386@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:14:59.438Z"
+    },
+    {
+      "id": "admin_act_1792872899430",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872899389_nydy4",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:14:59.430Z"
+    },
+    {
+      "id": "admin_act_1792872899423",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872899389_nydy4",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:14:59.423Z"
+    },
+    {
+      "id": "admin_act_1792872873500",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792872873465_1h8yw",
+      "details": {
+        "deletedEmail": "test.farmer.1792872873463@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:14:33.500Z"
+    },
+    {
+      "id": "admin_act_1792872873495",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872873465_1h8yw",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:14:33.495Z"
+    },
+    {
+      "id": "admin_act_1792872873490",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872873465_1h8yw",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:14:33.490Z"
+    },
+    {
+      "id": "admin_act_1792872853825",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792872853792_rr3rh",
+      "details": {
+        "deletedEmail": "test.farmer.1792872853790@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:14:13.825Z"
+    },
+    {
+      "id": "admin_act_1792872853820",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872853792_rr3rh",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:14:13.820Z"
+    },
+    {
+      "id": "admin_act_1792872853816",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872853792_rr3rh",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:14:13.816Z"
+    },
+    {
+      "id": "admin_act_1792872769342",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792872769308_9rpzd",
+      "details": {
+        "deletedEmail": "test.farmer.1792872769305@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:12:49.342Z"
+    },
+    {
+      "id": "admin_act_1792872769337",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872769308_9rpzd",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:12:49.337Z"
+    },
+    {
+      "id": "admin_act_1792872769333",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872769308_9rpzd",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:12:49.333Z"
+    },
+    {
+      "id": "admin_act_1792872684074",
+      "adminId": "admin_super_system",
+      "action": "delete_user",
+      "targetUserId": "usr_1792872684046_sw7lr",
+      "details": {
+        "deletedEmail": "test.farmer.1792872684044@example.com",
+        "reason": "privacy_data_erasure_request"
+      },
+      "createdAt": "2026-10-24T20:11:24.074Z"
+    },
+    {
+      "id": "admin_act_1792872684069",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872684046_sw7lr",
+      "details": {
+        "oldStatus": "suspended",
+        "newStatus": "active"
+      },
+      "createdAt": "2026-10-24T20:11:24.069Z"
+    },
+    {
+      "id": "admin_act_1792872684065",
+      "adminId": "admin_super_system",
+      "action": "update_status",
+      "targetUserId": "usr_1792872684046_sw7lr",
+      "details": {
+        "oldStatus": "active",
+        "newStatus": "suspended"
+      },
+      "createdAt": "2026-10-24T20:11:24.065Z"
+    }
+  ]
+}

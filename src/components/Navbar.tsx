@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, Menu, X, Globe, User, Moon, Sun, ChevronDown, LogOut, Download } from "lucide-react";
+import { Menu, X, Globe, User, Moon, Sun, ChevronDown, LogOut, Download } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
@@ -12,6 +12,7 @@ import { LanguageCode } from "@/context/LanguageContext";
 import { usePWA } from "@/components/PWAProvider";
 
 import BrandLogo from "@/components/BrandLogo";
+import { isGenuinelyNewAnnouncement } from "@/lib/grDateUtils";
 
 const languages: { code: LanguageCode; label: string }[] = [
   { code: "en", label: "English" },
@@ -28,24 +29,155 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const { isInstallable, isInstalled, installApp } = usePWA();
+  const { isInstalled, installApp } = usePWA();
+
+  // Notification indicator status for priority features
+  const [indicators, setIndicators] = useState({
+    cropRelief: false,    // Red blinking indicator: Genuine new verified GR
+    cropDetection: false, // Blue indicator: Model/feature update
+    schemes: false,       // Blue indicator: Schemes DBT update
+    market: false         // Blue indicator: Market price refresh
+  });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Evaluate notification indicators from localStorage and current URL
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const RELIEF_GR_KEY = "202610221655482506"; // Food Dept GR 22 Oct 2026
+      const DISEASE_KEY = "2026_model";
+      const SCHEMES_KEY = "2026_dbt";
+      const MARKET_KEY = "20261024";
+
+      // If user currently visits a page, clear its indicator
+      if (path === "/crop-relief") localStorage.setItem("agrismart_viewed_relief_gr", RELIEF_GR_KEY);
+      if (path === "/disease-detection") localStorage.setItem("agrismart_viewed_disease", DISEASE_KEY);
+      if (path === "/schemes") localStorage.setItem("agrismart_viewed_schemes", SCHEMES_KEY);
+      if (path === "/market") localStorage.setItem("agrismart_viewed_market", MARKET_KEY);
+
+      const hasViewedRelief = localStorage.getItem("agrismart_viewed_relief_gr") === RELIEF_GR_KEY;
+      const hasViewedDisease = localStorage.getItem("agrismart_viewed_disease") === DISEASE_KEY;
+      const hasViewedSchemes = localStorage.getItem("agrismart_viewed_schemes") === SCHEMES_KEY;
+      const hasViewedMarket = localStorage.getItem("agrismart_viewed_market") === MARKET_KEY;
+
+      setIndicators({
+        cropRelief: !hasViewedRelief,
+        cropDetection: !hasViewedDisease,
+        schemes: !hasViewedSchemes,
+        market: !hasViewedMarket,
+      });
+
+      // Dynamically check if a genuine new verified GR exists in database (published within 14 days)
+      fetch("/api/crop-relief/updates")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && Array.isArray(data.announcements)) {
+            const latestVerified = data.announcements.find(
+              (a: { id: string; evidenceStatus: string; publishedAt?: string | null; verifiedGrNumber?: string }) =>
+                isGenuinelyNewAnnouncement(a.publishedAt, a.evidenceStatus, 14)
+            );
+            if (latestVerified) {
+              const latestKey = latestVerified.verifiedGrNumber || latestVerified.id;
+              if (path === "/crop-relief") {
+                localStorage.setItem("agrismart_viewed_relief_gr", latestKey);
+                setIndicators(prev => ({ ...prev, cropRelief: false }));
+              } else {
+                const storedViewed = localStorage.getItem("agrismart_viewed_relief_gr");
+                setIndicators(prev => ({ ...prev, cropRelief: storedViewed !== latestKey }));
+              }
+            } else {
+              // No genuinely new verified announcement within recency window
+              setIndicators(prev => ({ ...prev, cropRelief: false }));
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const markAsViewed = (feature: "cropRelief" | "cropDetection" | "schemes" | "market") => {
+    if (typeof window !== "undefined") {
+      if (feature === "cropRelief") {
+        // Also fetch to ensure latest verified key is marked
+        fetch("/api/crop-relief/updates")
+          .then((res) => res.json())
+          .then((data) => {
+            const latest = data?.announcements?.find(
+              (a: { id: string; evidenceStatus: string; publishedAt?: string | null; verifiedGrNumber?: string }) =>
+                isGenuinelyNewAnnouncement(a.publishedAt, a.evidenceStatus, 14)
+            );
+            if (latest) {
+              localStorage.setItem("agrismart_viewed_relief_gr", latest.verifiedGrNumber || latest.id);
+            }
+          })
+          .catch(() => {});
+        setIndicators(prev => ({ ...prev, cropRelief: false }));
+      } else if (feature === "cropDetection") {
+        localStorage.setItem("agrismart_viewed_disease", "2026_model");
+        setIndicators(prev => ({ ...prev, cropDetection: false }));
+      } else if (feature === "schemes") {
+        localStorage.setItem("agrismart_viewed_schemes", "2026_dbt");
+        setIndicators(prev => ({ ...prev, schemes: false }));
+      } else if (feature === "market") {
+        localStorage.setItem("agrismart_viewed_market", "20261024");
+        setIndicators(prev => ({ ...prev, market: false }));
+      }
+    }
+  };
+
+  // Nav links strictly ordered by priority:
+  // 1. Crop Relief, 2. Crop Detection, 3. Government Schemes, 4. Market Prices, followed by standard modules
   const navLinks = [
     { name: t("nav_home"), href: "/" },
+    { 
+      name: t("nav_crop_relief", "Crop Relief"), 
+      href: "/crop-relief", 
+      featureKey: "cropRelief" as const,
+      tooltip: language === "mr" 
+        ? "नवीन अधिकृत शासन निर्णय (२२ ऑक्टोबर २०२६) • पाहण्यासाठी क्लिक करा" 
+        : language === "hi" 
+        ? "नया आधिकारिक शासनादेश (22 अक्टूबर 2026) • देखने के लिए क्लिक करें" 
+        : "New verified Government Resolution (22 Oct 2026) • Click to view"
+    },
+    { 
+      name: t("nav_disease"), 
+      href: "/disease-detection", 
+      featureKey: "cropDetection" as const,
+      tooltip: language === "mr"
+        ? "एआय पीक रोग निदान: अद्ययावत मॉडेल सक्रिय"
+        : language === "hi"
+        ? "एआई फसल रोग पहचान: अद्यतन मॉडल सक्रिय"
+        : "AI Crop Disease Detection: Precision model update"
+    },
+    { 
+      name: t("nav_gov"), 
+      href: "/schemes", 
+      featureKey: "schemes" as const,
+      tooltip: language === "mr"
+        ? "शासकीय योजना: अद्ययावत सबसिडी व अनुदान यादी"
+        : language === "hi"
+        ? "सरकारी योजनाएं: अद्यतन सब्सिडी व अनुदान सूची"
+        : "Government Schemes: Updated central & state subsidies"
+    },
+    { 
+      name: t("nav_market"), 
+      href: "/market", 
+      featureKey: "market" as const,
+      tooltip: language === "mr"
+        ? "थेट एपीएमसी व एगमार्कनेट दैनिक बाजारभाव उपलब्ध"
+        : language === "hi"
+        ? "दैनिक एपीएमसी एवं एगमार्कनेट मंडी भाव उपलब्ध"
+        : "Live Agmarknet & APMC daily market prices available"
+    },
     { name: t("nav_ai_assistant"), href: "/guidance" },
     { name: t("nav_crop_rec"), href: "/crop-recommendation" },
-    { name: t("nav_disease"), href: "/disease-detection" },
     { name: t("nav_weather"), href: "/weather" },
-    { name: t("nav_market"), href: "/market" },
-    { name: t("nav_gov"), href: "/schemes" },
     { name: t("nav_irrigation"), href: "/smart-irrigation" },
     { name: t("nav_dashboard"), href: "/dashboard" },
     { name: t("nav_contact"), href: "/contact" },
@@ -68,15 +200,55 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden xl:flex items-center space-x-1">
-            {navLinks.map((link, idx) => (
-              <Link
-                key={idx}
-                href={link.href}
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium px-3 py-2 rounded-md text-sm transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link, idx) => {
+              const hasRedIndicator = link.featureKey === "cropRelief" && indicators.cropRelief;
+              const hasBlueIndicator = 
+                (link.featureKey === "cropDetection" && indicators.cropDetection) ||
+                (link.featureKey === "schemes" && indicators.schemes) ||
+                (link.featureKey === "market" && indicators.market);
+
+              const isCropRelief = link.href === "/crop-relief";
+
+              return (
+                <Link
+                  key={idx}
+                  href={link.href}
+                  onClick={() => link.featureKey && markAsViewed(link.featureKey)}
+                  className={`relative inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isCropRelief
+                      ? "text-amber-800 dark:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 font-bold"
+                      : "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                  }`}
+                  title={link.tooltip || link.name}
+                >
+                  {/* Small red blinking indicator for genuinely new verified GR */}
+                  {hasRedIndicator && (
+                    <span 
+                      className="relative flex h-2 w-2 mr-0.5" 
+                      title={link.tooltip}
+                      aria-label={link.tooltip}
+                    >
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 motion-reduce:hidden" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                      <span className="sr-only">{link.tooltip}</span>
+                    </span>
+                  )}
+
+                  {/* Small subtle blue indicator (not continuously blinking, respects reduced motion) */}
+                  {hasBlueIndicator && (
+                    <span 
+                      className="inline-flex rounded-full h-1.5 w-1.5 bg-blue-600 dark:bg-blue-400 mr-0.5 flex-shrink-0"
+                      title={link.tooltip}
+                      aria-label={link.tooltip}
+                    >
+                      <span className="sr-only">{link.tooltip}</span>
+                    </span>
+                  )}
+
+                  <span>{link.name}</span>
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right Actions */}
@@ -179,6 +351,15 @@ export default function Navbar() {
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 py-2 overflow-hidden z-50"
                     >
+                      {user.role === "admin" && (
+                        <Link
+                          href="/admin/users"
+                          className="block px-4 py-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border-b border-gray-100 dark:border-gray-800"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          🛡️ Admin Dashboard
+                        </Link>
+                      )}
                       <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => setIsProfileMenuOpen(false)}>{t("nav_profile")}</Link>
                       <button onClick={() => { logout(); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">{t("nav_logout")}</button>
                     </motion.div>
@@ -239,16 +420,64 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {navLinks.map((link, idx) => (
-                <Link
-                  key={idx}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors"
-                >
-                  {link.name}
-                </Link>
-              ))}
+              {navLinks.map((link, idx) => {
+                const hasRedIndicator = link.featureKey === "cropRelief" && indicators.cropRelief;
+                const hasBlueIndicator = 
+                  (link.featureKey === "cropDetection" && indicators.cropDetection) ||
+                  (link.featureKey === "schemes" && indicators.schemes) ||
+                  (link.featureKey === "market" && indicators.market);
+
+                const isCropRelief = link.href === "/crop-relief";
+
+                return (
+                  <Link
+                    key={idx}
+                    href={link.href}
+                    onClick={() => {
+                      if (link.featureKey) markAsViewed(link.featureKey);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={
+                      isCropRelief
+                        ? "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-base font-bold text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 transition-colors shadow-sm my-1"
+                        : "flex items-center justify-between px-3 py-2.5 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors"
+                    }
+                    title={link.tooltip || link.name}
+                  >
+                    <div className="flex items-center gap-2">
+                      {hasRedIndicator && (
+                        <span 
+                          className="relative flex h-2 w-2"
+                          title={link.tooltip}
+                          aria-label={link.tooltip}
+                        >
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 motion-reduce:hidden" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                          <span className="sr-only">{link.tooltip}</span>
+                        </span>
+                      )}
+
+                      {hasBlueIndicator && (
+                        <span 
+                          className="inline-flex rounded-full h-1.5 w-1.5 bg-blue-600 dark:bg-blue-400 flex-shrink-0"
+                          title={link.tooltip}
+                          aria-label={link.tooltip}
+                        >
+                          <span className="sr-only">{link.tooltip}</span>
+                        </span>
+                      )}
+
+                      <span>{link.name}</span>
+                    </div>
+
+                    {isCropRelief && (
+                      <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-amber-600 text-white">
+                        {language === "mr" ? "मदत" : language === "hi" ? "राहत" : "Relief"}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
               
               {/* Mobile Install App Button */}
               {!isInstalled && (

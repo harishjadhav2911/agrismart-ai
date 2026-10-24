@@ -20,14 +20,15 @@ import {
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
-  BellRing,
   Check,
   Globe,
   Activity,
-  Cpu
+  Cpu,
+  ShieldAlert
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import BrandLogo from "@/components/BrandLogo";
+import GovernmentGrTicker from "@/components/home/GovernmentGrTicker";
 import { useLanguage, LanguageCode } from "@/context/LanguageContext";
 
 const LANGUAGE_OPTIONS: { code: LanguageCode; native: string; label: string; flag: string }[] = [
@@ -39,8 +40,48 @@ const LANGUAGE_OPTIONS: { code: LanguageCode; native: string; label: string; fla
 export default function HomePage() {
   const { t, language, setLanguage } = useLanguage();
 
-  // Core feature modules of AgriSmart AI
+  // Core feature modules of AgriSmart AI (Priority: Crop Relief > Crop Disease > Schemes > Market)
   const coreFeatures = [
+    {
+      icon: ShieldAlert,
+      title: t("f_relief_title", "Crop Damage & Relief Hub"),
+      description: language === "mr"
+        ? "अधिकृत शासन निर्णय (GR), दुष्काळग्रस्त ३०४ तालुक्यांची यादी, ७२ तास पंचनामा मार्गदर्शन व SDRF भरपाई गणक."
+        : language === "hi"
+        ? "आधिकारिक शासनादेश (GR), 304 सूखाग्रस्त तहसीलों की सूची, 72 घंटे का पंचनामा मार्गदर्शन व SDRF कैलकुलेटर।"
+        : "Official Maharashtra drought intelligence, calculate SDRF/NDRF assistance, 72-hour claim guide, and verified GR tracking.",
+      href: "/crop-relief",
+      badge: language === "mr" ? "सर्वोच्च प्राधान्य • शासन निर्णय" : language === "hi" ? "सर्वोच्च प्राथमिकता • शासनादेश" : "Priority #1 • Govt GRs",
+      color: "from-amber-500 via-orange-600 to-red-600",
+      accentBg: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-extrabold ring-1 ring-amber-500/30"
+    },
+    {
+      icon: Bug,
+      title: t("f_disease_title", "Crop Disease Detection"),
+      description: t("f_disease_desc", "Snap a photo of any crop leaf to instantly identify diseases and get certified ICAR/CIBRC treatments."),
+      href: "/disease-detection",
+      badge: language === "mr" ? "९८% अचूक निदान" : language === "hi" ? "९८% सटीक पहचान" : "98% AI Precision",
+      color: "from-amber-500 to-orange-600",
+      accentBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+    },
+    {
+      icon: Landmark,
+      title: t("f_gov_title", "Government Schemes & Subsidies"),
+      description: t("f_gov_desc", "Stay updated on PM-Kisan, drip irrigation subsidies, solar pumps, and government grant schemes."),
+      href: "/schemes",
+      badge: language === "mr" ? "सबसिडी व योजना" : language === "hi" ? "सब्सिडी और योजनाएं" : "Subsidies & Grants",
+      color: "from-purple-500 to-violet-600",
+      accentBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/60"
+    },
+    {
+      icon: TrendingUp,
+      title: t("f_market_title", "Live Mandi & Market Prices"),
+      description: t("f_market_desc", "Official real-time APMC/Agmarknet mandi prices, trend analysis, and highest price forecasts."),
+      href: "/market",
+      badge: language === "mr" ? "थेट बाजारभाव" : language === "hi" ? "लाइव मंडी भाव" : "Live Agmarknet Rates",
+      color: "from-indigo-500 to-blue-600",
+      accentBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/60"
+    },
     {
       icon: Bot,
       title: t("f_ai_title", "AI Farming Assistant"),
@@ -60,15 +101,6 @@ export default function HomePage() {
       accentBg: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800/60"
     },
     {
-      icon: Bug,
-      title: t("f_disease_title", "Crop Disease Detection"),
-      description: t("f_disease_desc", "Snap a photo of any crop leaf to instantly identify diseases and get certified ICAR/CIBRC treatments."),
-      href: "/disease-detection",
-      badge: language === "mr" ? "९८% अचूक निदान" : language === "hi" ? "९८% सटीक पहचान" : "98% AI Precision",
-      color: "from-amber-500 to-orange-600",
-      accentBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
-    },
-    {
       icon: CloudSun,
       title: t("f_weather_title", "Hyperlocal Weather"),
       description: t("f_weather_desc", "Hyper-local, highly accurate rainfall, temperature, and spray suitability forecasts for your farm."),
@@ -76,24 +108,6 @@ export default function HomePage() {
       badge: language === "mr" ? "थेट पाऊस अंदाज" : language === "hi" ? "सटीक मौसम अपडेट" : "Rain & Wind Radar",
       color: "from-blue-500 to-cyan-600",
       accentBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
-    },
-    {
-      icon: TrendingUp,
-      title: t("f_market_title", "Live Mandi & Market Prices"),
-      description: t("f_market_desc", "Official real-time APMC/Agmarknet mandi prices, trend analysis, and highest price forecasts."),
-      href: "/market",
-      badge: language === "mr" ? "थेट बाजारभाव" : language === "hi" ? "लाइव मंडी भाव" : "Live Agmarknet Rates",
-      color: "from-indigo-500 to-blue-600",
-      accentBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/60"
-    },
-    {
-      icon: Landmark,
-      title: t("f_gov_title", "Government Schemes & Subsidies"),
-      description: t("f_gov_desc", "Stay updated on PM-Kisan, drip irrigation subsidies, solar pumps, and government grant schemes."),
-      href: "/schemes",
-      badge: language === "mr" ? "सबसिडी व योजना" : language === "hi" ? "सब्सिडी और योजनाएं" : "Subsidies & Grants",
-      color: "from-purple-500 to-violet-600",
-      accentBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/60"
     },
     {
       icon: Droplets,
@@ -228,29 +242,8 @@ export default function HomePage() {
           </div>
         </div>
 
-      {/* Top Advisory Ticker */}
-      <div className="bg-emerald-700 dark:bg-emerald-950 text-white text-xs sm:text-sm font-medium py-2 px-4 border-b border-emerald-600/30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 overflow-hidden">
-          <div className="flex items-center gap-2 flex-shrink-0 font-bold bg-emerald-800 dark:bg-emerald-900 px-2.5 py-0.5 rounded-full text-[11px] uppercase tracking-wider">
-            <BellRing size={13} className="text-amber-300 animate-pulse" />
-            <span>{language === "mr" ? "थेट सूचना" : language === "hi" ? "लाइव अलर्ट" : "Live Alert"}</span>
-          </div>
-          <div className="truncate flex-grow text-emerald-50">
-            {language === "mr"
-              ? "📢 खरीप व रब्बी हंगामासाठी खतांचे अधिकृत दर व हवामानानुसार फवारणी सल्ला अद्ययावत करण्यात आला आहे."
-              : language === "hi"
-              ? "📢 खरीफ व रबी मौसम के लिए उर्वरक के आधिकारिक रेट एवं मौसम अनुसार छिड़काव परामर्श अपडेट किया गया है।"
-              : "📢 Official crop weather advisories, seasonal fertilizer schedules, and Agmarknet mandi rates updated live."}
-          </div>
-          <Link
-            href="/weather"
-            className="hidden sm:inline-flex items-center gap-1 font-bold underline hover:text-emerald-200 flex-shrink-0 text-xs"
-          >
-            <span>{language === "mr" ? "पहा" : language === "hi" ? "देखें" : "View Forecast"}</span>
-            <ChevronRight size={13} />
-          </Link>
-        </div>
-      </div>
+      {/* News-Channel-Style Government GR & Relief Ticker */}
+      <GovernmentGrTicker />
 
       {/* 2. HERO SECTION WITH PROFESSIONAL AGRICULTURE BACKGROUND IMAGE */}
       <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
@@ -297,22 +290,15 @@ export default function HomePage() {
                 {t("hero_sub", "AI-powered farming guidance, weather updates, crop recommendations, government schemes, and multilingual support.")}
               </p>
 
-              {/* Primary Call to Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 max-w-xl mx-auto mb-12">
+              {/* Primary Call to Action Buttons (Priority: Crop Relief > Crop Disease > Schemes > AI Assistant) */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-3.5 max-w-2xl mx-auto mb-12">
                 <Link
-                  href="/dashboard"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold text-base shadow-xl shadow-emerald-600/40 transition-all hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                  href="/crop-relief"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-gray-950 px-7 py-4 rounded-2xl font-black text-sm sm:text-base shadow-xl shadow-amber-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                 >
-                  <span>{t("btn_get_started", "Get Started")}</span>
-                  <ArrowRight size={18} />
-                </Link>
-
-                <Link
-                  href="/guidance"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gray-900/90 hover:bg-gray-800 text-white px-8 py-4 rounded-2xl font-bold text-base border border-gray-700 shadow-md backdrop-blur-md transition-all hover:-translate-y-0.5 cursor-pointer"
-                >
-                  <Bot size={20} className="text-emerald-400" />
-                  <span>{t("btn_talk_ai", "Talk to AI Assistant")}</span>
+                  <ShieldAlert size={18} />
+                  <span>{language === "mr" ? "पीक नुकसान भरपाई" : language === "hi" ? "फसल क्षति राहत" : "Crop Relief Portal"}</span>
+                  <ArrowRight size={17} />
                 </Link>
 
                 <Link
@@ -321,6 +307,22 @@ export default function HomePage() {
                 >
                   <Bug size={18} className="text-amber-400" />
                   <span>{language === "mr" ? "रोग स्कॅन करा" : language === "hi" ? "रोग स्कैन करें" : "Scan Crop Leaf"}</span>
+                </Link>
+
+                <Link
+                  href="/schemes"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 px-6 py-4 rounded-2xl font-bold text-sm border border-purple-500/40 backdrop-blur-md transition-all hover:-translate-y-0.5 cursor-pointer"
+                >
+                  <Landmark size={18} className="text-purple-400" />
+                  <span>{language === "mr" ? "शासकीय योजना" : language === "hi" ? "सरकारी योजनाएं" : "Govt Schemes"}</span>
+                </Link>
+
+                <Link
+                  href="/market"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 px-6 py-4 rounded-2xl font-bold text-sm border border-indigo-500/40 backdrop-blur-md transition-all hover:-translate-y-0.5 cursor-pointer"
+                >
+                  <TrendingUp size={18} className="text-indigo-400" />
+                  <span>{language === "mr" ? "थेट बाजारभाव" : language === "hi" ? "मंडी भाव" : "Market Prices"}</span>
                 </Link>
               </div>
 

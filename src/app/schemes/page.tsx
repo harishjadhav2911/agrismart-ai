@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, Suspense, useDeferredValue } from "react";
 import Navbar from "@/components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -21,14 +21,24 @@ function SchemesContent() {
   const { location } = useLocation();
   const { user, toggleSaveScheme } = useAuth();
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category") || "All";
 
   const [chatInput, setChatInput] = useState("");
   const { messages, isLoading, sendMessage } = useGeminiChat("Government Schemes Page", "schemes_chat_welcome");
   
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string>(initialCategory === "Bookmarked" ? "Bookmarked" : "All");
-  const [localBookmarks, setLocalBookmarks] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const activeCategory = selectedCategory ?? (searchParams.get("category") || "All");
+  const setActiveCategory = setSelectedCategory;
+
+  const [localBookmarks, setLocalBookmarks] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("agrismart_bookmarks");
+        return saved ? JSON.parse(saved) : [];
+      } catch {}
+    }
+    return [];
+  });
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedSchemeId, setSelectedSchemeId] = useState<string | null>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -53,21 +63,7 @@ function SchemesContent() {
   const bookmarks = useMemo(() => {
     if (user?.savedSchemes) return user.savedSchemes;
     return localBookmarks;
-  }, [user?.savedSchemes, localBookmarks]);
-
-  useEffect(() => {
-    const cat = searchParams.get("category");
-    if (cat) {
-      setActiveCategory(cat);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("agrismart_bookmarks");
-      if (saved) setLocalBookmarks(JSON.parse(saved));
-    } catch {}
-  }, []);
+  }, [user, localBookmarks]);
 
   const handleToggleBookmark = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -125,31 +121,36 @@ function SchemesContent() {
     };
   };
 
-  // Sort and Filter logic
-  const filteredSchemes = localizedSchemes
-    .filter(scheme => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch = scheme.name.toLowerCase().includes(q) || 
-                            scheme.shortDescription.toLowerCase().includes(q) ||
-                            scheme.ministry.toLowerCase().includes(q);
-      
-      if (activeCategory === "Bookmarked") {
-        return matchesSearch && bookmarks.includes(scheme.id);
-      }
-      
-      const matchesCategory = activeCategory === "All" || scheme.categoryType === activeCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      // Prioritize by location if available
-      if (location && location.state) {
-        const aRelevant = a.stateTags.includes("All") || a.stateTags.includes(location.state);
-        const bRelevant = b.stateTags.includes("All") || b.stateTags.includes(location.state);
-        if (aRelevant && !bRelevant) return -1;
-        if (!aRelevant && bRelevant) return 1;
-      }
-      return 0;
-    });
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
+  // Sort and Filter logic (memoized with deferred query for instant input responsiveness)
+  const filteredSchemes = useMemo(() => {
+    const q = deferredSearchQuery.toLowerCase().trim();
+    return localizedSchemes
+      .filter(scheme => {
+        const matchesSearch = !q ||
+                              scheme.name.toLowerCase().includes(q) || 
+                              scheme.shortDescription.toLowerCase().includes(q) ||
+                              scheme.ministry.toLowerCase().includes(q);
+        
+        if (activeCategory === "Bookmarked") {
+          return matchesSearch && bookmarks.includes(scheme.id);
+        }
+        
+        const matchesCategory = activeCategory === "All" || scheme.categoryType === activeCategory;
+        return matchesSearch && matchesCategory;
+      })
+      .sort((a, b) => {
+        // Prioritize by location if available
+        if (location && location.state) {
+          const aRelevant = a.stateTags.includes("All") || a.stateTags.includes(location.state);
+          const bRelevant = b.stateTags.includes("All") || b.stateTags.includes(location.state);
+          if (aRelevant && !bRelevant) return -1;
+          if (!aRelevant && bRelevant) return 1;
+        }
+        return 0;
+      });
+  }, [localizedSchemes, deferredSearchQuery, activeCategory, bookmarks, location]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-gray-50 dark:bg-gray-950 transition-colors">

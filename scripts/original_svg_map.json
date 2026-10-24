@@ -1,0 +1,182 @@
+{
+  "chhatrapati-sambhajinagar": {
+    "svgPath": "M260,230 L320,220 L350,250 L340,300 L290,310 L250,270 Z",
+    "labelX": 300,
+    "labelY": 270
+  },
+  "jalna": {
+    "svgPath": "M340,250 L390,240 L420,270 L395,315 L345,300 Z",
+    "labelX": 375,
+    "labelY": 280
+  },
+  "beed": {
+    "svgPath": "M295,315 L345,305 L395,320 L380,385 L320,395 L285,345 Z",
+    "labelX": 345,
+    "labelY": 360
+  },
+  "dharashiv": {
+    "svgPath": "M320,395 L375,385 L405,420 L370,465 L315,445 Z",
+    "labelX": 350,
+    "labelY": 430
+  },
+  "latur": {
+    "svgPath": "M375,385 L435,375 L465,420 L425,465 L370,465 L405,420 Z",
+    "labelX": 410,
+    "labelY": 425
+  },
+  "parbhani": {
+    "svgPath": "M395,315 L460,305 L480,345 L435,375 L380,385 Z",
+    "labelX": 435,
+    "labelY": 335
+  },
+  "hingoli": {
+    "svgPath": "M420,270 L470,255 L500,285 L460,305 L420,295 Z",
+    "labelX": 465,
+    "labelY": 285
+  },
+  "nanded": {
+    "svgPath": "M460,305 L525,290 L560,340 L505,395 L465,370 L480,345 Z",
+    "labelX": 505,
+    "labelY": 345
+  },
+  "pune": {
+    "svgPath": "M160,320 L230,310 L260,360 L240,410 L180,410 L150,360 Z",
+    "labelX": 200,
+    "labelY": 360
+  },
+  "solapur": {
+    "svgPath": "M240,410 L315,395 L345,455 L310,515 L230,490 Z",
+    "labelX": 285,
+    "labelY": 455
+  },
+  "satara": {
+    "svgPath": "M145,410 L220,410 L235,465 L175,505 L130,460 Z",
+    "labelX": 180,
+    "labelY": 450
+  },
+  "sangli": {
+    "svgPath": "M175,490 L245,475 L280,530 L220,575 L165,540 Z",
+    "labelX": 200,
+    "labelY": 535
+  },
+  "kolhapur": {
+    "svgPath": "M130,530 L185,520 L205,580 L160,630 L115,585 Z",
+    "labelX": 160,
+    "labelY": 590
+  },
+  "ahmednagar": {
+    "svgPath": "M210,270 L280,260 L305,325 L260,380 L205,335 Z",
+    "labelX": 250,
+    "labelY": 335
+  },
+  "nashik": {
+    "svgPath": "M145,210 L210,195 L245,250 L205,305 L140,270 Z",
+    "labelX": 185,
+    "labelY": 240
+  },
+  "dhule": {
+    "svgPath": "M175,130 L240,120 L260,175 L200,195 L165,160 Z",
+    "labelX": 200,
+    "labelY": 155
+  },
+  "nandurbar": {
+    "svgPath": "M130,80 L195,75 L210,135 L155,145 L115,105 Z",
+    "labelX": 160,
+    "labelY": 110
+  },
+  "jalgaon": {
+    "svgPath": "M245,130 L325,125 L345,185 L285,215 L235,175 Z",
+    "labelX": 285,
+    "labelY": 175
+  },
+  "buldhana": {
+    "svgPath": "M335,150 L395,145 L415,220 L355,245 L320,195 Z",
+    "labelX": 365,
+    "labelY": 195
+  },
+  "akola": {
+    "svgPath": "M400,165 L450,160 L470,215 L420,235 L395,195 Z",
+    "labelX": 425,
+    "labelY": 195
+  },
+  "washim": {
+    "svgPath": "M415,225 L465,220 L480,265 L430,285 L405,245 Z",
+    "labelX": 435,
+    "labelY": 245
+  },
+  "amravati": {
+    "svgPath": "M435,115 L505,105 L530,175 L460,185 L425,145 Z",
+    "labelX": 470,
+    "labelY": 155
+  },
+  "yavatmal": {
+    "svgPath": "M470,210 L545,195 L575,255 L515,290 L465,245 Z",
+    "labelX": 505,
+    "labelY": 245
+  },
+  "wardha": {
+    "svgPath": "M510,165 L565,155 L585,205 L535,225 L505,185 Z",
+    "labelX": 535,
+    "labelY": 190
+  },
+  "nagpur": {
+    "svgPath": "M555,120 L620,110 L645,175 L585,195 L545,150 Z",
+    "labelX": 580,
+    "labelY": 155
+  },
+  "chandrapur": {
+    "svgPath": "M555,215 L625,200 L650,270 L585,310 L545,255 Z",
+    "labelX": 585,
+    "labelY": 260
+  },
+  "bhandara": {
+    "svgPath": "M615,115 L675,105 L690,165 L635,175 L610,135 Z",
+    "labelX": 635,
+    "labelY": 140
+  },
+  "gondia": {
+    "svgPath": "M670,105 L740,95 L755,160 L690,170 L665,125 Z",
+    "labelX": 695,
+    "labelY": 135
+  },
+  "gadchiroli": {
+    "svgPath": "M635,195 L710,175 L745,280 L695,370 L625,325 L635,245 Z",
+    "labelX": 660,
+    "labelY": 280
+  },
+  "palghar": {
+    "svgPath": "M90,170 L140,165 L155,240 L105,255 L85,205 Z",
+    "labelX": 110,
+    "labelY": 220
+  },
+  "thane": {
+    "svgPath": "M95,250 L145,240 L160,290 L110,305 L90,270 Z",
+    "labelX": 105,
+    "labelY": 275
+  },
+  "mumbai-suburban": {
+    "svgPath": "M75,285 L95,280 L100,310 L80,315 Z",
+    "labelX": 85,
+    "labelY": 300
+  },
+  "mumbai-city": {
+    "svgPath": "M70,315 L85,310 L88,335 L72,340 Z",
+    "labelX": 75,
+    "labelY": 325
+  },
+  "raigad": {
+    "svgPath": "M85,325 L145,315 L160,380 L100,395 L80,350 Z",
+    "labelX": 110,
+    "labelY": 350
+  },
+  "ratnagiri": {
+    "svgPath": "M95,395 L145,390 L160,500 L110,510 L85,425 Z",
+    "labelX": 110,
+    "labelY": 450
+  },
+  "sindhudurg": {
+    "svgPath": "M100,510 L150,505 L155,610 L115,615 L95,545 Z",
+    "labelX": 115,
+    "labelY": 565
+  }
+}
